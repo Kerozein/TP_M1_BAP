@@ -6,6 +6,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import java.lang.Math;
 
 /**
  * 
@@ -66,11 +67,42 @@ public class Player
         //directionArrow = sprite.getClip().;
 
 	    // Tous les joueurs ont une vitesse aleatoire entre 0.0 et 1.0
-        // Random randomGenerator = new Random();
-        // step = randomGenerator.nextFloat();
+        step = Math.random();
+	    
+	  }
 
-        // Pour commencer les joueurs ont une vitesse / un pas fixe
-        step = 1;
+	  	  Player(GraphicsContext gc, String color, int xInit, int yInit, String side, float speed)
+	  {
+		// Tous les joueurs commencent au centre du canvas, 
+	    x = xInit;               
+	    y = yInit;
+	    graphicsContext = gc;
+	    playerColor=color;
+	    
+	    angle = 0;
+
+	    // On charge la representation du joueur
+        if(side=="top"){
+        	directionArrow = new Image("assets/PlayerArrowDown.png");
+		}
+		else{
+			directionArrow = new Image("assets/PlayerArrowUp.png");
+		}
+        
+        PlayerDirectionArrow = new ImageView();
+        PlayerDirectionArrow.setImage(directionArrow);
+        PlayerDirectionArrow.setFitWidth(10);
+        PlayerDirectionArrow.setPreserveRatio(true);
+        PlayerDirectionArrow.setSmooth(true);
+        PlayerDirectionArrow.setCache(true);
+
+        Image tilesheetImage = new Image("assets/orc.png");
+        sprite = new Sprite(tilesheetImage, 0,0, Duration.seconds(.2), side);
+        sprite.setX(x);
+        sprite.setY(y);
+        //directionArrow = sprite.getClip().;
+
+		step = speed;
 	    
 	  }
 
