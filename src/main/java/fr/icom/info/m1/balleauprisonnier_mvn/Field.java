@@ -138,9 +138,14 @@ public class Field extends Canvas {
 	        		{
 	        			joueurs[i].turnRight();	        			
 	        		}
-	        		if (input.contains("SPACE")){
-	        			joueurs[i].shoot();
-					}
+	        		if (i==0 && input.contains("SPACE")) 
+	        		{
+	        			joueurs[i].shoot();	        			
+	        		}
+					if (i==1 && input.contains("ENTER")) 
+	        		{
+	        			joueurs[i].shoot();	        			
+	        		}
 
 	        		
 	        		joueurs[i].display();
