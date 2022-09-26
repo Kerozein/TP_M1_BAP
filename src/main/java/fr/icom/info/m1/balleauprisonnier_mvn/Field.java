@@ -30,6 +30,7 @@ public class Field extends Canvas {
     final GraphicsContext gc;
     final int width;
     final int height;
+	final static int TAILLE_EQUIPE = 3;
     
     /**
      * Canvas dans lequel on va dessiner le jeu.
@@ -50,11 +51,27 @@ public class Field extends Canvas {
         gc = this.getGraphicsContext2D();
         
         /** On initialise le terrain de jeu */
-    	equipe1.add(new Player(gc, colorMap[0], w/2, h-50, "bottom"));
-    	equipe1.get(0).display();
+	System.out.println(w);
+		for(int i=0; i<TAILLE_EQUIPE; i++) {
+			if(i==0) {
+				equipe1.add(new HumanPlayer(gc, colorMap[0], w/2, h-50, "bottom"));
+			}
+			else {
+				equipe1.add(new IAPlayer(gc, colorMap[0], (w-150*i)/2, h-50, "bottom"));
+			}
+			equipe1.get(i).display();
+		}
 
-    	equipe2.add(new Player(gc, colorMap[1], w/2, 20, "top"));
-    	equipe2.get(0).display();
+		for(int i=0; i<TAILLE_EQUIPE; i++) {
+			if(i==0) {
+				equipe2.add(new HumanPlayer(gc, colorMap[0], w/2, 20, "top"));
+			}
+			else {
+				equipe2.add(new IAPlayer(gc, colorMap[0], (w-150*i)/2, 20, "top"));
+			}
+			equipe2.get(i).display();
+		}
+
 
 
 	    /** 
@@ -106,57 +123,52 @@ public class Field extends Canvas {
 	            gc.fillRect(0, 0, width, height);
 	        	
 	            // Deplacement et affichage des joueurs
-	        	for (int i = 0; i < equipe1.size(); i++) 
-	    	    {
-	        		if (i==0 && input.contains("LEFT"))
-	        		{
-	        			equipe1.get(0).moveLeft();
-	        		} 
-	        		if (i==0 && input.contains("RIGHT")) 
-	        		{
-	        			equipe1.get(0).moveRight();	        			
-	        		}
-	        		if (i==0 && input.contains("UP"))
-	        		{
-	        			equipe1.get(0).turnLeft();
-	        		} 
-	        		if (i==0 && input.contains("DOWN")) 
-	        		{
-	        			equipe1.get(0).turnRight();	        			
-	        		}
-	        		if (i==0 && input.contains("SPACE")) 
-	        		{
-	        			equipe1.get(0).shoot();	        			
-	        		}
+				for (Player player : equipe1) {
+					if(player instanceof HumanPlayer)
+					{
+						if (input.contains("LEFT")) {
+							equipe1.get(0).moveLeft();
+						}
+						if (input.contains("RIGHT")) {
+							equipe1.get(0).moveRight();
+						}
+						if (input.contains("UP")) {
+							equipe1.get(0).turnLeft();
+						}
+						if (input.contains("DOWN")) {
+							equipe1.get(0).turnRight();
+						}
+						if (input.contains("SPACE")) {
+							equipe1.get(0).shoot();
+						}
+						player.display();
+					}
 
-	        		equipe1.get(i).display();
-	    	    }
+				}
 
-				for (int i = 0; i < equipe2.size(); i++) 
-	    	    {
-	        		if (i==0 && input.contains("Q"))
-	        		{
-	        			equipe2.get(0).moveLeft();
-	        		} 
-	        		if (i==0 && input.contains("D")) 
-	        		{
-	        			equipe2.get(0).moveRight();	        			
-	        		}
-	        		if (i==0 && input.contains("Z"))
-	        		{
-	        			equipe2.get(0).turnLeft();
-	        		} 
-	        		if (i==0 && input.contains("S")) 
-	        		{
-	        			equipe2.get(0).turnRight();	        			
-	        		}
-					if (i==0 && input.contains("ENTER")) 
-	        		{
-	        			equipe2.get(0).shoot();	        			
-	        		}
+				for (Player player : equipe2) {
+					if(player instanceof HumanPlayer)
+					{
+						if (input.contains("Q")) {
+							equipe2.get(0).moveLeft();
+						}
+						if (input.contains("D")) {
+							equipe2.get(0).moveRight();
+						}
+						if (input.contains("Z")) {
+							equipe2.get(0).turnLeft();
+						}
+						if (input.contains("S")) {
+							equipe2.get(0).turnRight();
+						}
+						if (input.contains("ENTER")) {
+							equipe2.get(0).shoot();
+						}
 
-					equipe2.get(i).display();
-	    	    }
+						player.display();
+					}
+
+				}
 	    	}
 	     }.start(); // On lance la boucle de rafraichissement 
 	     
