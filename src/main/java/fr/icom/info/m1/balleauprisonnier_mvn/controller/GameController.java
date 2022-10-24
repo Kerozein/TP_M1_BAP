@@ -1,8 +1,12 @@
-package fr.icom.info.m1.balleauprisonnier_mvn;
+package fr.icom.info.m1.balleauprisonnier_mvn.controller;
 
 
 import java.util.ArrayList;
 
+import fr.icom.info.m1.balleauprisonnier_mvn.model.HumanPlayer;
+import fr.icom.info.m1.balleauprisonnier_mvn.model.IAPlayer;
+import fr.icom.info.m1.balleauprisonnier_mvn.model.Player;
+import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -15,62 +19,42 @@ import javafx.scene.paint.Color;
  * Classe gerant le terrain de jeu.
  * 
  */
-public class Field extends Canvas {
+public class GameController extends Canvas {
 	
 	/** Equipes */
-	ArrayList<Player> equipe1 = new ArrayList<Player>();
-	ArrayList<Player> equipe2 = new ArrayList<Player>();
+	ArrayList<Player> equipe1;
+	ArrayList<PlayerView> equipe1View;
+	ArrayList<Player> equipe2;
+	ArrayList<PlayerView> equipe2View;
 
-	/** Couleurs possibles */
-	String[] colorMap = new String[] {"blue", "green", "orange", "purple", "yellow"};
 	/** Tableau traçant les evenements */
     ArrayList<String> input = new ArrayList<String>();
     
 
-    final GraphicsContext gc;
+    public final GraphicsContext gc;
     final int width;
     final int height;
-	final static int TAILLE_EQUIPE = 3;
     
     /**
      * Canvas dans lequel on va dessiner le jeu.
-     * 
-     * @param scene Scene principale du jeu a laquelle on va ajouter notre Canvas
+     *
      * @param w largeur du canvas
      * @param h hauteur du canvas
      */
-	public Field(Scene scene, int w, int h) 
+	public GameController(int w, int h, ArrayList<Player> e1, ArrayList<Player> e2, ArrayList<PlayerView> vE1, ArrayList<PlayerView> vE2)
 	{
 		super(w, h); 
 		width = w;
 		height = h;
+		equipe1 = e1;
+		equipe2 = e2;
+		equipe1View = vE1;
+		equipe2View = vE2;
 		
 		/** permet de capturer le focus et donc les evenements clavier et souris */
 		this.setFocusTraversable(true);
 		
         gc = this.getGraphicsContext2D();
-        
-        /** On initialise le terrain de jeu */
-	System.out.println(w);
-		for(int i=0; i<TAILLE_EQUIPE; i++) {
-			if(i==0) {
-				equipe1.add(new HumanPlayer(gc, colorMap[0], w/2, h-50, "bottom"));
-			}
-			else {
-				equipe1.add(new IAPlayer(gc, colorMap[0], (w-150*i)/2, h-50, "bottom"));
-			}
-			equipe1.get(i).display();
-		}
-
-		for(int i=0; i<TAILLE_EQUIPE; i++) {
-			if(i==0) {
-				equipe2.add(new HumanPlayer(gc, colorMap[0], w/2, 20, "top"));
-			}
-			else {
-				equipe2.add(new IAPlayer(gc, colorMap[0], (w-150*i)/2, 20, "top"));
-			}
-			equipe2.get(i).display();
-		}
 
 
 
@@ -123,49 +107,61 @@ public class Field extends Canvas {
 	            gc.fillRect(0, 0, width, height);
 	        	
 	            // Deplacement et affichage des joueurs
-				for (Player player : equipe1) {
-					if(player instanceof HumanPlayer)
+				for (int i=0 ; i<equipe1.size() ; i++ ) {
+					Player p = equipe1.get(i);
+					PlayerView pv = equipe1View.get(i);
+					if(p instanceof HumanPlayer)
 					{
 						if (input.contains("LEFT")) {
-							equipe1.get(0).moveLeft();
+							p.moveLeft();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("RIGHT")) {
-							equipe1.get(0).moveRight();
+							p.moveRight();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("UP")) {
-							equipe1.get(0).turnLeft();
+							p.turnLeft();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("DOWN")) {
-							equipe1.get(0).turnRight();
+							p.turnRight();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("SPACE")) {
-							equipe1.get(0).shoot();
+							p.shoot();
 						}
-						player.display();
+						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
 
 				}
 
-				for (Player player : equipe2) {
-					if(player instanceof HumanPlayer)
+				for (int i=0 ; i<equipe2.size() ; i++ ) {
+					Player p = equipe2.get(i);
+					PlayerView pv = equipe2View.get(i);
+					if(p instanceof HumanPlayer)
 					{
 						if (input.contains("Q")) {
-							equipe2.get(0).moveLeft();
+							p.moveLeft();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("D")) {
-							equipe2.get(0).moveRight();
+							p.moveRight();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("Z")) {
-							equipe2.get(0).turnLeft();
+							p.turnLeft();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("S")) {
-							equipe2.get(0).turnRight();
+							p.turnRight();
+							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("ENTER")) {
 							equipe2.get(0).shoot();
-						}
 
-						player.display();
+						}
+						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
 
 				}
@@ -174,12 +170,7 @@ public class Field extends Canvas {
 	     
 	}
 
-
-	public ArrayList<Player> getEquipe1(){
-		return equipe1;
+	public GraphicsContext getGc() {
+		return gc;
 	}
-
-	public ArrayList<Player> getEquipe2(){
-		return equipe2;
-	}	
 }
