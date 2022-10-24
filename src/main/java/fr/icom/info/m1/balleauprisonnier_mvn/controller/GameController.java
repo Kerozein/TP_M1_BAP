@@ -158,8 +158,8 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("ENTER")) {
-							equipe2.get(0).shoot();
-
+							pv.getSprite().playShoot();
+							Projectile.getProjectile(90,p.getAngle(), p.getX(), p.getY());
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}

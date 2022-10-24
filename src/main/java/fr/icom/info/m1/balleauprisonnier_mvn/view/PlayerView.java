@@ -68,4 +68,8 @@ public class PlayerView {
         Rotate r = new Rotate(angle, px, py);
         gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
     }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
 }

@@ -108,11 +108,6 @@ public class Player
 	    }
 	  }
 
-
-	  public void shoot(){
-	  	//sprite.playShoot(); A rajouter dans le controller
-	  }
-	  
 	  /**
 	   *  Deplacement en mode boost
 	   */
