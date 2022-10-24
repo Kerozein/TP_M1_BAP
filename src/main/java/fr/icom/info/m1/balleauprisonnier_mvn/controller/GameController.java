@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.HumanPlayer;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.IAPlayer;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.Player;
+import fr.icom.info.m1.balleauprisonnier_mvn.model.Projectile;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -129,7 +130,8 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("SPACE")) {
-							p.shoot();
+							pv.getSprite().playShoot();
+							Projectile.getProjectile(90,p.getAngle(), p.getX(), p.getY());
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
