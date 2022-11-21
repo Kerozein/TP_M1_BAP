@@ -8,13 +8,19 @@ import fr.icom.info.m1.balleauprisonnier_mvn.model.IAPlayer;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.Player;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.Projectile;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
+import fr.icom.info.m1.balleauprisonnier_mvn.view.ProjectileView;
+import fr.icom.info.m1.balleauprisonnier_mvn.view.Sprite;
 import javafx.animation.AnimationTimer;
+import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Classe gerant le terrain de jeu.
@@ -35,6 +41,8 @@ public class GameController extends Canvas {
     public final GraphicsContext gc;
     final int width;
     final int height;
+
+	private Projectile projectile = null;
     
     /**
      * Canvas dans lequel on va dessiner le jeu.
@@ -106,6 +114,11 @@ public class GameController extends Canvas {
 	            // On nettoie le canvas a chaque frame
 	            gc.setFill( Color.LIGHTGRAY);
 	            gc.fillRect(0, 0, width, height);
+
+				// On affiche la balle a chaque frame
+				ProjectileView projView = new ProjectileView("assets/ball.png");
+				if(projectile != null)
+					projView.display(gc, projectile.getX(), projectile.getY());
 	        	
 	            // Deplacement et affichage des joueurs
 				for (int i=0 ; i<equipe1.size() ; i++ ) {
@@ -130,8 +143,13 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("SPACE")) {
-							pv.getSprite().playShoot();
-							Projectile.getProjectile(90,p.getAngle(), p.getX(), p.getY());
+							if(projectile == null || !(projectile.isBallMoving()))
+							{
+								pv.getSprite().playShoot();
+								projectile = Projectile.getProjectile(8.5,p.getAngle(), p.getX(), p.getY(),-1);
+								shoot(projectile);
+							}
+
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
@@ -160,8 +178,13 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("ENTER")) {
-							pv.getSprite().playShoot();
-							Projectile.getProjectile(90,p.getAngle(), p.getX(), p.getY());
+							if(projectile == null || !(projectile.isBallMoving()))
+							{
+								pv.getSprite().playShoot();
+								projectile = Projectile.getProjectile(8.5,p.getAngle(), p.getX(), p.getY(),1);
+								shoot(projectile);
+							}
+
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
@@ -172,7 +195,27 @@ public class GameController extends Canvas {
 	     
 	}
 
+	private void shoot(Projectile proj){
+		Thread t = new Thread(() -> {
+			while(isOOB(proj)){
+				proj.moveProjectile();
+
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException ignored) {
+				}
+			}
+			proj.setBallMoving(false);
+
+		});
+			t.start();
+	}
+
 	public GraphicsContext getGc() {
 		return gc;
+	}
+
+	public boolean isOOB(Projectile p){
+		return p.getX() > 0 && p.getX() < width && p.getY() > 0 && p.getY() < height -49;
 	}
 }
