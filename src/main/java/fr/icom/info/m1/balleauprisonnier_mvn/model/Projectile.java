@@ -10,7 +10,7 @@ public class Projectile {
     private static Projectile projectile;
 
 
-    public Projectile(double speed ,double direction, double x, double y) {
+    private Projectile(double speed ,double direction, double x, double y) {
         this.speed = speed;
         this.direction = direction;
         this.x = x;

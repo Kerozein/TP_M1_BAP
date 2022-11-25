@@ -1,12 +1,6 @@
 package fr.icom.info.m1.balleauprisonnier_mvn.model;
 
 
-import fr.icom.info.m1.balleauprisonnier_mvn.view.Sprite;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.transform.Rotate;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.util.Duration;
 import java.lang.Math;
 
 /**
@@ -18,8 +12,9 @@ public class Player
 {
 	  double x;       // position horizontale du joueur
 	  final double y; 	  // position verticale du joueur
-	  double angle = 90; // rotation du joueur, devrait toujour être en 0 et 180
+	  double angle; // rotation du joueur, devrait toujour être en 0 et 180
 	  double step;    // pas d'un joueur
+
 
 
 	  
@@ -127,4 +122,5 @@ public class Player
 	public double getX() {
 		return x;
 	}
+
 }

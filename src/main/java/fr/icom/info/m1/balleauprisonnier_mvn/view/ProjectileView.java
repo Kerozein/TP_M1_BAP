@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class ProjectileView {
-    private final Image img;
+    private Image img;
 
     public ProjectileView(String  path) {
         this.img = new Image(path);
@@ -14,4 +14,11 @@ public class ProjectileView {
         gc.drawImage(this.img, x, y);
     }
 
+    public Image getImg(){
+        return this.img;
+    }
+
+    public void setImg(Image img) {
+        this.img = img;
+    }
 }
