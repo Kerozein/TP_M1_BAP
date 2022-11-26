@@ -1,6 +1,5 @@
 package fr.icom.info.m1.balleauprisonnier_mvn.view;
 
-import fr.icom.info.m1.balleauprisonnier_mvn.App;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,7 +13,13 @@ public class PlayerView {
 
     // On une image globale du joueur
     public Image directionArrow;
+
+    private Image img;
     public ImageView PlayerDirectionArrow;
+
+    public static final int WIDTH = 30;
+
+    public static final int HEIGHT = 46;
 
     public PlayerView(String color, String side, double x, double y){
         playerColor=color;
@@ -34,11 +39,10 @@ public class PlayerView {
         PlayerDirectionArrow.setSmooth(true);
         PlayerDirectionArrow.setCache(true);
 
-        Image tilesheetImage = new Image("assets/orc.png");
-        sprite = new Sprite(tilesheetImage, 0,0, Duration.seconds(.2), side);
+        this.img = new Image("assets/orc.png");
+        sprite = new Sprite(this.img, 0,0, Duration.seconds(.2), side);
         sprite.setX(x);
         sprite.setY(y);
-        //directionArrow = sprite.getClip().;
     }
 
     public void spriteAnimate(double x, double y){
@@ -71,5 +75,9 @@ public class PlayerView {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public void disable() {
+        sprite.setImage(null);
     }
 }
