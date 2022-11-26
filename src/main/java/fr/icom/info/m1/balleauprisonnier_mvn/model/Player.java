@@ -15,6 +15,7 @@ public class Player
 	  double angle; // rotation du joueur, devrait toujour être en 0 et 180
 	  double step;    // pas d'un joueur
 
+	boolean haveBall = false;
 
 
 	  
@@ -121,6 +122,14 @@ public class Player
 
 	public double getX() {
 		return x;
+	}
+
+	public void setBall(boolean b) {
+		  this.haveBall = b;
+	}
+
+	public boolean haveBall() {
+		  return this.haveBall;
 	}
 
 }

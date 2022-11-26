@@ -3,6 +3,9 @@ package fr.icom.info.m1.balleauprisonnier_mvn.controller;
 
 import javafx.geometry.Rectangle2D;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.*;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
@@ -20,11 +23,9 @@ import javafx.scene.paint.Color;
  * 
  */
 public class GameController extends Canvas {
-	/*  TODO: Systeme de rammassage de balle
-	 *  TODO: Trouver pourquoi filename.txt se recrée en boucle
-	 *  TODO: Faire les vues (SCORE + BIND)
-	 *  TODO: Attribuer une balle aléatoirement + bind sur une touche
-	 *  TODO: Plusieurs joueurs tire la balle sans qu'elle ait touché le sol
+	/*  TODO: Modifier le background ?
+	 *	TODO: Rajouter une IA Correcte pour les deplacements
+	 *  TODO: Faire les vues (SCORE + BIND) -> Ce qui en découle le score et tout !
 	*/
 
 	/** Equipes */
@@ -59,12 +60,12 @@ public class GameController extends Canvas {
 		equipe2 = e2;
 		equipe1View = vE1;
 		equipe2View = vE2;
+		gc = this.getGraphicsContext2D();
 		
 		/** permet de capturer le focus et donc les evenements clavier et souris */
 		this.setFocusTraversable(true);
-		
-        gc = this.getGraphicsContext2D();
 
+		giveBallToARandomPlayer();
 
 	    /** 
 	     * Event Listener du clavier 
@@ -117,11 +118,13 @@ public class GameController extends Canvas {
 	            gc.setFill( Color.LIGHTGRAY);
 	            gc.fillRect(0, 0, width, height);
 
+
 				if(projectile != null){
 
 					//Affichage de la balle
 					projView.display(gc, projectile.getX(), projectile.getY());
 
+					//Check si la balle est sortie du terrain
 					if(isOOB(projectile)){
 						projectile.setBallMoving(false);
 					}
@@ -131,6 +134,8 @@ public class GameController extends Canvas {
 
 						//Check de la collision entre la balle et un joueur
 						Player p;
+
+						//Equipe 1
 						if ((p = checkCollisionOfTeam(projBoundary, equipe1)) != null) {
 							int index = equipe1.indexOf(p);
 							equipe1.remove(index);
@@ -139,6 +144,7 @@ public class GameController extends Canvas {
 							projectile.setBallMoving(false);
 						}
 
+						//Equipe 2
 						if ((p = checkCollisionOfTeam(projBoundary, equipe2)) != null) {
 							int index = equipe2.indexOf(p);
 							equipe2.remove(index);
@@ -154,27 +160,37 @@ public class GameController extends Canvas {
 					Player p = equipe1.get(i);
 					PlayerView pv = equipe1View.get(i);
 
+
 					// Joueur IA de l'equipe 1
 					if(p instanceof IAPlayer){
+						tryShoot(p,pv,-1);
+
 						if((int) Math.round( Math.random() ) == 1){
 							p.moveLeft();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						else{
 							p.moveRight();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 					}
 
 					//Joueur Humain de l'equipe 1
-					if(p instanceof HumanPlayer)
-					{
+					if(p instanceof HumanPlayer) {
 						if (input.contains("LEFT")) {
 							p.moveLeft();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("RIGHT")) {
 							p.moveRight();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("UP")) {
@@ -186,9 +202,7 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("SPACE")) {
-							pv.getSprite().playShoot();
-							projectile = Projectile.getProjectile(1, p.getAngle(), p.getX(), p.getY() - PlayerView.HEIGHT - 10, -1);
-							projectile.setBallMoving(true);
+							tryShoot(p, pv,-1);
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
@@ -201,25 +215,34 @@ public class GameController extends Canvas {
 
 					//Joueur IA de l'equipe 2
 					if(p instanceof IAPlayer){
+						tryShoot(p,pv,1);
+
 						if((int) Math.round( Math.random() ) == 1){
 							p.moveLeft();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						else{
 							p.moveRight();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 					}
 
 					//Joueur Humain de l'equipe 2
-					else if(p instanceof HumanPlayer)
-					{
+					else if(p instanceof HumanPlayer) {
 						if (input.contains("Q")) {
 							p.moveLeft();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("D")) {
 							p.moveRight();
+							if(projectile != null)
+								tryGrab(p,projectile);
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("Z")) {
@@ -231,9 +254,7 @@ public class GameController extends Canvas {
 							pv.spriteAnimate(p.getX());
 						}
 						if (input.contains("ENTER")) {
-							pv.getSprite().playShoot();
-							projectile = Projectile.getProjectile(1,p.getAngle(), p.getX(), p.getY() + PlayerView.HEIGHT + 10,1);
-							projectile.setBallMoving(true);
+							tryShoot(p, pv,1);
 						}
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
@@ -242,6 +263,24 @@ public class GameController extends Canvas {
 	    	}
 	     }.start(); // On lance la boucle de rafraichissement 
 	     
+	}
+
+	private void giveBallToARandomPlayer() {
+		ArrayList<Player> team;
+		if((int) Math.round( Math.random() ) == 1)
+			team = equipe1;
+		else
+			team = equipe2;
+		team.get((int) (Math.random() * team.size())).setBall(true);
+	}
+
+	private void tryShoot(Player p, PlayerView pv, int sens) {
+		if(p.haveBall()){
+			pv.getSprite().playShoot();
+			projectile = Projectile.getProjectile(1, p.getAngle(), p.getX(), p.getY() + (PlayerView.HEIGHT + 10)* sens,sens);
+			projectile.setBallMoving(true);
+			p.setBall(false);
+		}
 	}
 
 	private Player checkCollisionOfTeam(Rectangle2D projBoundary, ArrayList<Player> team) {
@@ -262,6 +301,15 @@ public class GameController extends Canvas {
 
 	public boolean isOOB(Projectile p){
 		return !(p.getX()>0 && p.getX()<this.width-projView.getImg().getWidth() && p.getY()>0 && p.getY() < this.height-projView.getImg().getHeight());
+	}
+
+	public void tryGrab(Player p, Projectile proj){
+		Rectangle2D boundary = new Rectangle2D(projectile.getX(), projectile.getY(), projView.getImg().getWidth(), projView.getImg().getHeight());
+		if(!proj.isBallMoving() && checkCollisionPlayer(boundary, p))
+		{
+			p.setBall(true);
+			projectile = null;
+		}
 	}
 
 }

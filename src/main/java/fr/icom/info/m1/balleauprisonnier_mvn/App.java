@@ -100,4 +100,8 @@ public class App extends Application
         //System.out.println( "Hello World!" );
     	Application.launch(args);
     }
+	//TODO: Completer la methode a la place de faire 300 add chiants
+	private void addPlayer(){
+
+	}
 }
