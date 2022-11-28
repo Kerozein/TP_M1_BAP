@@ -7,6 +7,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import fr.icom.info.m1.balleauprisonnier_mvn.model.*;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.ProjectileView;
@@ -23,10 +25,6 @@ import javafx.scene.paint.Color;
  * 
  */
 public class GameController extends Canvas {
-	/*  TODO: Modifier le background ?
-	 *	TODO: Rajouter une IA Correcte pour les deplacements
-	 *  TODO: Faire les vues (SCORE + BIND) -> Ce qui en découle le score et tout !
-	*/
 
 	/** Equipes */
 	ArrayList<Player> equipe1;
@@ -284,7 +282,9 @@ public class GameController extends Canvas {
 	}
 
 	private Player checkCollisionOfTeam(Rectangle2D projBoundary, ArrayList<Player> team) {
-		for (Player player : team) {
+		Iterator<Player> iterator = equipe1.listIterator();
+		while (iterator.hasNext()) {
+			Player player = iterator.next();
 			if(checkCollisionPlayer(projBoundary, player))
 			return player;
 		}
@@ -310,6 +310,10 @@ public class GameController extends Canvas {
 			p.setBall(true);
 			projectile = null;
 		}
+	}
+
+	public boolean checkLooseTeam(ArrayList<Player> team){
+		return team.size()==0;
 	}
 
 }

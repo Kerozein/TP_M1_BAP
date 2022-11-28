@@ -80,4 +80,5 @@ public class PlayerView {
     public void disable() {
         sprite.setImage(null);
     }
+
 }
