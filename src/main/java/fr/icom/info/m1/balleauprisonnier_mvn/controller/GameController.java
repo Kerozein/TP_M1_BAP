@@ -261,6 +261,7 @@ public class GameController extends Canvas {
 					//Redistribuer la balle
 					if(input.contains("R")) {
 						giveBallToARandomPlayer();
+						input.remove("R");
 					}
 				}
 	    	}
@@ -287,7 +288,7 @@ public class GameController extends Canvas {
 	}
 
 	private Player checkCollisionOfTeam(Rectangle2D projBoundary, ArrayList<Player> team) {
-		Iterator<Player> iterator = equipe1.listIterator();
+		Iterator<Player> iterator = team.listIterator();
 		while (iterator.hasNext()) {
 			Player player = iterator.next();
 			if(checkCollisionPlayer(projBoundary, player))
@@ -305,7 +306,7 @@ public class GameController extends Canvas {
 	}
 
 	public boolean isOOB(Projectile p){
-		return !(p.getX()>0 && p.getX()<this.width-projView.getImg().getWidth() && p.getY()>0 && p.getY() < this.height-projView.getImg().getHeight());
+		return !(p.getX()>=0 && p.getX()<=this.width-projView.getImg().getWidth() && p.getY()>=0 && p.getY() <= this.height-projView.getImg().getHeight());
 	}
 
 	public void tryGrab(Player p, Projectile proj){
