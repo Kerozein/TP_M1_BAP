@@ -65,6 +65,7 @@ public class GameController extends Canvas {
 
 		giveBallToARandomPlayer();
 
+
 	    /** 
 	     * Event Listener du clavier 
 	     * quand une touche est pressee on la rajoute a la liste d'input
@@ -257,6 +258,10 @@ public class GameController extends Canvas {
 						pv.display(gc,p.getX(),p.getY(),p.getAngle());
 					}
 
+					//Redistribuer la balle
+					if(input.contains("R")) {
+						giveBallToARandomPlayer();
+					}
 				}
 	    	}
 	     }.start(); // On lance la boucle de rafraichissement 
