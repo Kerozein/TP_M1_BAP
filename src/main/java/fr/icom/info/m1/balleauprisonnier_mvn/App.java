@@ -30,7 +30,7 @@ public class App extends Application
 	final static int HEIGHT = 600;
 	@Override
 	/**
-	 * Display the menu when lunching the game
+	 * Display the menu when launching the game
 	 */
 	public void start(Stage stage)
 	{
@@ -110,7 +110,7 @@ public class App extends Application
 
 	/**
 	 * @param stage
-	 * Method that build the components for the lunching menu of the game
+	 * Method that build the components for the launching menu of the game
 	 */
 	private void buildStartMenu(Stage stage){
 		Group root = new Group();
