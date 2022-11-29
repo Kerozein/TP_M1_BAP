@@ -34,6 +34,9 @@ public class Projectile {
         return projectile;
     }
 
+    /**
+     * Method that moves the ball
+     */
     public void move() {
         x = x + (speed * -Math.sin(direction*Math.PI/180))* way;
         y = y + (speed * Math.cos(direction*Math.PI/180))* way;
@@ -47,6 +50,9 @@ public class Projectile {
         return x;
     }
 
+    /**
+     * Check if the ball is moving
+     */
     public boolean isBallMoving() {
         return ballMoving;
     }

@@ -52,7 +52,9 @@ public class PlayerView {
         return sprite;
     }
 
-    // Make a player disappear from the screen
+    /**
+     * Make a player disappear from the screen
+     */
     public void disable() {
         sprite.setImage(null);
     }

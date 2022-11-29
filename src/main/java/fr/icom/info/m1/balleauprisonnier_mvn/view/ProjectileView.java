@@ -8,6 +8,13 @@ public class ProjectileView {
     public ProjectileView(String  path) {
         this.img = new Image(path);
     }
+
+    /**
+     * @param gc
+     * @param x
+     * @param y
+     * Display the projectile on the canvas
+     */
     public void display(GraphicsContext gc, double x, double y){
         gc.drawImage(this.img, x, y);
     }

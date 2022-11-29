@@ -29,6 +29,9 @@ public class App extends Application
 	final static int WIDTH = 600;
 	final static int HEIGHT = 600;
 	@Override
+	/**
+	 * Display the menu when lunching the game
+	 */
 	public void start(Stage stage)
 	{
         stage.setTitle("BalleAuPrisonnier");
@@ -105,6 +108,10 @@ public class App extends Application
 		stage.show();
 	}
 
+	/**
+	 * @param stage
+	 * Method that build the components for the lunching menu of the game
+	 */
 	private void buildStartMenu(Stage stage){
 		Group root = new Group();
 		Scene scene = new Scene( root );
@@ -118,7 +125,7 @@ public class App extends Application
 		Image image = new Image("assets/title_logo.png");
 		//Creating the image view
 		ImageView imageView = new ImageView();
-		//Setting image to the image view
+		//Setting the image to the image view
 		imageView.setImage(image);
 		//Setting the image view parameters
 		imageView.setY(HEIGHT/2-150);
@@ -160,6 +167,10 @@ public class App extends Application
 		stage.show();
 	}
 
+	/**
+	 * @param stage
+	 * Scene to explain the user how to play
+	 */
 	private void buildHelpMenu(Stage stage){
 		Group root = new Group();
 		Scene scene = new Scene( root );

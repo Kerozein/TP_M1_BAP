@@ -7,11 +7,9 @@ import fr.icom.info.m1.balleauprisonnier_mvn.model.*;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.ProjectileView;
 import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -100,7 +98,7 @@ public class GameController extends Canvas{
 						projectile.setBallMoving(false);
 					}
 
-					//Check if ball is moving on the field
+					//Check if the ball is moving on the field
 					if(projectile.isBallMoving()) {
 						projectile.move();
 						projBoundary = new Rectangle2D(projectile.getX(), projectile.getY(), projImg.getWidth(), projImg.getHeight());
@@ -248,6 +246,9 @@ public class GameController extends Canvas{
 	}
 
 
+	/**
+	 * Method that gives the ball to a random player.
+	 */
 	private void giveBallToARandomPlayer() {
 		ArrayList<Player> team;
 		if((int) Math.round( Math.random() ) == 1)
@@ -270,6 +271,12 @@ public class GameController extends Canvas{
 		gc.strokeText(scoreT1 + "/" + scoreT2, width/2, height/2);
 	}
 
+	/**
+	 *
+	 * @param projBoundary
+	 * @param team
+	 * Check the collision of all the players of the team
+	 */
 	private Player checkCollisionOfTeam(Rectangle2D projBoundary, ArrayList<Player> team) {
 		Iterator<Player> iterator = team.listIterator();
 		while (iterator.hasNext()) {
@@ -280,14 +287,29 @@ public class GameController extends Canvas{
 		return null;
 	}
 
+	/**
+	 *
+	 * @param projBoundary
+	 * @param player
+	 * Check the collision of one player
+	 */
 	private boolean checkCollisionPlayer(Rectangle2D projBoundary, Player player){
 		return projBoundary.intersects(new Rectangle2D(player.getX(), player.getY(), PlayerView.WIDTH, PlayerView.HEIGHT));
 	}
 
+	/**
+	 * @param p
+	 * Check if the projectile is out of bound
+	 */
 	public boolean isOOB(Projectile p){
 		return !(p.getX()>=0 && p.getX()<=this.width-projView.getImg().getWidth() && p.getY()>=0 && p.getY() <= this.height-projView.getImg().getHeight());
 	}
 
+	/**
+	 * @param p
+	 * @param proj
+	 * Method that allows player to grab the projectile if it's not moving
+	 */
 	public void tryGrab(Player p, Projectile proj){
 		Rectangle2D boundary = new Rectangle2D(projectile.getX(), projectile.getY(), projView.getImg().getWidth(), projView.getImg().getHeight());
 		if(!proj.isBallMoving() && checkCollisionPlayer(boundary, p))
