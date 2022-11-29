@@ -7,20 +7,16 @@ import fr.icom.info.m1.balleauprisonnier_mvn.model.IAPlayer;
 import fr.icom.info.m1.balleauprisonnier_mvn.model.Player;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -29,103 +25,87 @@ import java.util.ArrayList;
  */
 public class App extends Application 
 {
-	final static int TAILLE_EQUIPE = 5;
+	final static int TEAM_SIZE = 5;
 	final static int WIDTH = 600;
 	final static int HEIGHT = 600;
-	/**
-	 * En javafx start() lance l'application
-	 *
-	 * On cree le SceneGraph de l'application ici
-	 * @see <a href="https://docs.oracle.com/javafx/2/scenegraph/jfxpub-scenegraph.htm">...</a>
-	 *
-	 */
 	@Override
-	public void start(Stage stage) throws Exception 
+	public void start(Stage stage)
 	{
-		// Nom de la fenetre
         stage.setTitle("BalleAuPrisonnier");
 		Image image = new Image("assets/title_logo.png");
 		stage.getIcons().add(image);
 
 		stage.setHeight(HEIGHT);
 		stage.setWidth(WIDTH);
-		buildMenu(stage);
+		buildStartMenu(stage);
 	}
 
-	private void AddTeamSpriteToRoot(Group root, ArrayList<Player> equipe, ArrayList<PlayerView> equipe1View, GameController gameController) {
-		for(int i = 0; i< equipe.size(); i++ )
+	private void AddTeamSpriteToRoot(Group root, ArrayList<Player> team, ArrayList<PlayerView> teamView, GameController gameController) {
+		for(int i = 0; i< team.size(); i++ )
 		{
-			Player p = equipe.get(i);
-			PlayerView pv = equipe1View.get(i);
-			root.getChildren().add(pv.sprite);
-			pv.display(gameController.getGc(),p.getX(),p.getY(),p.getAngle());
+			Player p = team.get(i);
+			PlayerView pv = teamView.get(i);
+			root.getChildren().add(pv.getSprite());
+			pv.display(gameController.getGc(),p.getX(),p.getY(),p.getDirection());
 		}
 	}
 
-	public static void main(String[] args)
-    {
-        //System.out.println( "Hello World!" );
+	public static void main(String[] args){
     	Application.launch(args);
     }
-	//TODO: Completer la methode a la place de faire 300 add chiants
-	private void addPlayer(){
-
-	}
-
 	private void initGame(Stage stage){
 		Group root = new Group();
 		Scene scene = new Scene(root);
 
 		stage.setHeight(HEIGHT+50);
 		stage.setWidth(WIDTH);
-		/** Couleurs possibles */
-		String[] colorMap = new String[] {"blue", "green", "orange", "purple", "yellow"};
 
-		/** On initialise les equipes */
+		//Creation of team
 
-		ArrayList<Player> equipe1 = new ArrayList<>();
-		ArrayList<Player> equipe2 = new ArrayList<>();
-		ArrayList<PlayerView> equipe1View = new ArrayList<>();
-		ArrayList<PlayerView> equipe2View = new ArrayList<>();
-		for(int i=0; i<TAILLE_EQUIPE; i++) {
+		ArrayList<Player> team1 = new ArrayList<>();
+		ArrayList<Player> team2 = new ArrayList<>();
+		ArrayList<PlayerView> team1View = new ArrayList<>();
+		ArrayList<PlayerView> team2View = new ArrayList<>();
+		for(int i = 0; i< TEAM_SIZE; i++) {
 
 			if(i==0) {
-				equipe1.add(new HumanPlayer(WIDTH/2, HEIGHT-50));
-				equipe1View.add(new PlayerView(colorMap[0],"bottom", WIDTH/2, HEIGHT-50));
+				team1.add(new HumanPlayer(WIDTH/2, HEIGHT-50));
+				team1View.add(new PlayerView("bottom", WIDTH/2, HEIGHT-50));
 			}
 			else {
-				equipe1.add(new IAPlayer((WIDTH-150*i)/2, HEIGHT-50));
-				equipe1View.add(new PlayerView(colorMap[0],"bottom", (WIDTH-150*i)/2, HEIGHT-50));
+				team1.add(new IAPlayer((WIDTH-150*i)/2, HEIGHT-50));
+				team1View.add(new PlayerView("bottom", (WIDTH-150*i)/2, HEIGHT-50));
 			}
 
 		}
 
-		for(int i=0; i<TAILLE_EQUIPE; i++) {
+		for(int i = 0; i< TEAM_SIZE; i++) {
 			if(i==0) {
-				equipe2.add(new HumanPlayer(WIDTH/2, 20));
-				equipe2View.add(new PlayerView(colorMap[0],"top", WIDTH/2, 1));
+				team2.add(new HumanPlayer(WIDTH/2, 20));
+				team2View.add(new PlayerView("top", WIDTH/2, 1));
 			}
 			else {
-				equipe2.add(new IAPlayer((WIDTH-150*i)/2, 20));
-				equipe2View.add(new PlayerView(colorMap[0],"top", (WIDTH-150*i)/2, 1));
+				team2.add(new IAPlayer((WIDTH-150*i)/2, 20));
+				team2View.add(new PlayerView("top", (WIDTH-150*i)/2, 1));
 			}
 		}
 
-		// On cree le terrain de jeu et on l'ajoute a la racine de la scene
-		GameController gameController = new GameController(WIDTH, HEIGHT, equipe1, equipe2, equipe1View, equipe2View);
+		// Add controller to the scene
+		GameController gameController = new GameController(WIDTH, HEIGHT, team1, team2, team1View, team2View);
 		root.getChildren().add(gameController);
 
 
-		/* Affichage on ajoute les sprites a la racine de la scene */
-		AddTeamSpriteToRoot(root, equipe1, equipe1View, gameController);
-		AddTeamSpriteToRoot(root, equipe2, equipe2View, gameController);
 
-		// On ajoute la scene a la fenetre et on affiche
+		// Add sprites to the scene
+		AddTeamSpriteToRoot(root, team1, team1View, gameController);
+		AddTeamSpriteToRoot(root, team2, team2View, gameController);
+
+		// Add scene to window
 		stage.setScene( scene );
 		stage.show();
 	}
 
-	private void buildMenu(Stage stage){
+	private void buildStartMenu(Stage stage){
 		Group root = new Group();
 		Scene scene = new Scene( root );
 		scene.setFill(Color.LIGHTGRAY);
@@ -133,7 +113,7 @@ public class App extends Application
 
 		title.setX(WIDTH/2 - 130);
 		title.setY(HEIGHT/6);
-		title.setFont(new javafx.scene.text.Font("Montserrat", 30));
+		title.setFont(new Font("Montserrat", 30));
 
 		Image image = new Image("assets/title_logo.png");
 		//Creating the image view
@@ -147,29 +127,14 @@ public class App extends Application
 		imageView.setPreserveRatio(true);
 
 		Button play = new Button();
-		play.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-									 @Override
-									 public void handle(MouseEvent t) {
-										initGame(stage);
-
-									 }
-								 });
-
+		play.setOnMouseClicked(t -> initGame(stage));
 		play.setText("Lancer la partie");
 		play.setFont(new Font("Montserrat", 20));
 		play.setTranslateX(40);
 		play.setTranslateY(HEIGHT*5/6);
 
 		Button help = new Button();
-		help.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent t) {
-				buildHelpMenu(stage);
-
-			}
-		});
+		help.setOnMouseClicked(t -> buildHelpMenu(stage));
 
 		help.setText("Comment Jouer ?");
 		help.setFont(new Font("Montserrat", 20));
@@ -177,13 +142,7 @@ public class App extends Application
 		help.setTranslateY(HEIGHT*5/6);
 
 		Button exit = new Button();
-		exit.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent t) {
-				System.exit(0);
-			}
-		});
+		exit.setOnMouseClicked(t -> System.exit(0));
 
 		exit.setText("Quitter");
 		exit.setFont(new Font("Montserrat", 20));
@@ -211,19 +170,13 @@ public class App extends Application
 		title.setY(HEIGHT/6);
 		title.setFont(new javafx.scene.text.Font("Montserrat", 30));
 
-		Text help = new Text(10,20,"Le joueur 1 se déplace avec ZQSD et tire avec ENTREE\nLe joueur 2 se déplace avec les fleches directionnelles et tire avec ESPACE\nLes joueurs ne peuvent tirer que s'ils ont rammassé la balle\nSi la balle est bloquée, il faut appuyer sur R pour la redistribuer a un joueur");
+		Text help = new Text(10,20,"Le joueur 1 se déplace avec ZQSD et tire avec ENTREE\nLe joueur 2 se déplace avec les fleches directionnelles et tire avec ESPACE\nLes joueurs ne peuvent tirer que s'ils ont rammassé la balle\nSi la balle est bloquée, il faut appuyer sur R pour la redistribuer a un joueur\nAppuyer sur O pour afficher le score");
 		help.setX(50);
 		help.setY(HEIGHT/5);
 		help.setFont(new javafx.scene.text.Font("Montserrat", 15));
 
 		Button back = new Button();
-		back.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent t) {
-				buildMenu(stage);
-			}
-		});
+		back.setOnMouseClicked(t -> buildStartMenu(stage));
 
 		back.setText("Retourner en arriere");
 		back.setFont(new Font("Montserrat", 20));

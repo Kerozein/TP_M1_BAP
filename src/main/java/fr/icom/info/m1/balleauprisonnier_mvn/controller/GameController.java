@@ -1,14 +1,8 @@
 package fr.icom.info.m1.balleauprisonnier_mvn.controller;
 
-
 import javafx.geometry.Rectangle2D;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import fr.icom.info.m1.balleauprisonnier_mvn.model.*;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.PlayerView;
 import fr.icom.info.m1.balleauprisonnier_mvn.view.ProjectileView;
@@ -19,93 +13,71 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-/**
- * Classe gerant le terrain de jeu.
- * 
- */
-public class GameController extends Canvas {
 
-	/** Equipes */
-	ArrayList<Player> equipe1;
-	ArrayList<PlayerView> equipe1View;
-	ArrayList<Player> equipe2;
-	ArrayList<PlayerView> equipe2View;
+public class GameController extends Canvas{
 
-	/** Tableau traçant les evenements */
-    ArrayList<String> input = new ArrayList<String>();
-    
+	// Team models and views
+	private final ArrayList<Player> team1;
+	private final ArrayList<PlayerView> team1View;
+	private final ArrayList<Player> team2;
+	private final ArrayList<PlayerView> team2View;
 
-    public final GraphicsContext gc;
-    final int width;
-    final int height;
+	// Event array
+	private final ArrayList<String> input = new ArrayList<>();
 
+	// Score
+	private int scoreT1;
+	private int scoreT2;
+
+	// Canvas properties
+	private final int width;
+	private final int height;
+	private final GraphicsContext gc;
+
+	// Projectile model and view
 	private Projectile projectile = null;
 	private final ProjectileView projView = new ProjectileView("assets/ball.png");
     
-    /**
-     * Canvas dans lequel on va dessiner le jeu.
-     *
-     * @param w largeur du canvas
-     * @param h hauteur du canvas
-     */
-	public GameController(int w, int h, ArrayList<Player> e1, ArrayList<Player> e2, ArrayList<PlayerView> vE1, ArrayList<PlayerView> vE2)
+
+	public GameController(int w, int h, ArrayList<Player> t1, ArrayList<Player> t2, ArrayList<PlayerView> t1v, ArrayList<PlayerView> t2v)
 	{
 		super(w, h); 
 		width = w;
 		height = h;
-		equipe1 = e1;
-		equipe2 = e2;
-		equipe1View = vE1;
-		equipe2View = vE2;
+		team1 = t1;
+		team2 = t2;
+		team1View = t1v;
+		team2View = t2v;
+		scoreT1 = 0;
+		scoreT2 = 0;
 		gc = this.getGraphicsContext2D();
-		
-		/** permet de capturer le focus et donc les evenements clavier et souris */
-		this.setFocusTraversable(true);
+		gc.setFont(new Font("Montserrat", 40));
 
 		giveBallToARandomPlayer();
 
+		// Catch focus (keyboard event)
+		this.setFocusTraversable(true);
 
-	    /** 
-	     * Event Listener du clavier 
-	     * quand une touche est pressee on la rajoute a la liste d'input
-	     *   
-	     */
+
+		// When a key is pressed, add in event array
 	    this.setOnKeyPressed(
-	    		new EventHandler<KeyEvent>()
-	    	    {
-	    	        public void handle(KeyEvent e)
-	    	        {
-	    	            String code = e.getCode().toString();
-	    	            // only add once... prevent duplicates
-	    	            if ( !input.contains(code) )
-	    	                input.add( code );
-	    	        }
-	    	    });
+				e -> {
+					String code = e.getCode().toString();
+					// only add once... prevent duplicates
+					if ( !input.contains(code) )
+						input.add( code );
+				});
 
-	    /** 
-	     * Event Listener du clavier 
-	     * quand une touche est relachee on l'enleve de la liste d'input
-	     *   
-	     */
+		// When a key is released remove it from event array
 	    this.setOnKeyReleased(
-	    	    new EventHandler<KeyEvent>()
-	    	    {
-	    	        public void handle(KeyEvent e)
-	    	        {
-	    	            String code = e.getCode().toString();
-	    	            input.remove( code );
-	    	        }
-	    	    });
+				e -> {
+					String code = e.getCode().toString();
+					input.remove( code );
+				});
 	    
-	    /** 
-	     * 
-	     * Boucle principale du jeu
-	     * 
-	     * handle() est appelee a chaque rafraichissement de frame
-	     * soit environ 60 fois par seconde.
-	     * 
-	     */
+		// main loop (called ~60 times per seconds)
 	    new AnimationTimer() 
 	    {
 	        public void handle(long currentNanoTime)
@@ -113,54 +85,58 @@ public class GameController extends Canvas {
 				Image projImg = projView.getImg();
 				Rectangle2D projBoundary;
 
-	            // On nettoie le canvas a chaque frame
-	            gc.setFill( Color.LIGHTGRAY);
-	            gc.fillRect(0, 0, width, height);
+	            // Clear canvas
+				gc.setFill( Color.LIGHTGRAY);
+				gc.fillRect(0, 0, width, height);
 
 
 				if(projectile != null){
 
-					//Affichage de la balle
+					//Display projectile
 					projView.display(gc, projectile.getX(), projectile.getY());
 
-					//Check si la balle est sortie du terrain
+					//Check if the projectile is out of bounds
 					if(isOOB(projectile)){
 						projectile.setBallMoving(false);
 					}
+
+					//Check if ball is moving on the field
 					if(projectile.isBallMoving()) {
-						projectile.moveProjectile();
+						projectile.move();
 						projBoundary = new Rectangle2D(projectile.getX(), projectile.getY(), projImg.getWidth(), projImg.getHeight());
 
-						//Check de la collision entre la balle et un joueur
 						Player p;
 
-						//Equipe 1
-						if ((p = checkCollisionOfTeam(projBoundary, equipe1)) != null) {
-							int index = equipe1.indexOf(p);
-							equipe1.remove(index);
-							equipe1View.get(index).disable();
-							equipe1View.remove(index);
+						//Check if there is a collision between a player and the moving ball
+						// Team 1
+						if ((p = checkCollisionOfTeam(projBoundary, team1)) != null) {
+							int index = team1.indexOf(p);
+							team1.remove(index);
+							team1View.get(index).disable();
+							team1View.remove(index);
 							projectile.setBallMoving(false);
+							scoreT2++;
 						}
 
-						//Equipe 2
-						if ((p = checkCollisionOfTeam(projBoundary, equipe2)) != null) {
-							int index = equipe2.indexOf(p);
-							equipe2.remove(index);
-							equipe2View.get(index).disable();
-							equipe2View.remove(index);
+						// Team 2
+						if ((p = checkCollisionOfTeam(projBoundary, team2)) != null) {
+							int index = team2.indexOf(p);
+							team2.remove(index);
+							team2View.get(index).disable();
+							team2View.remove(index);
 							projectile.setBallMoving(false);
+							scoreT1++;
 						}
 					}
 				}
 
-				// Deplacement et affichage des joueurs
-				for (int i=0 ; i<equipe1.size() ; i++ ) {
-					Player p = equipe1.get(i);
-					PlayerView pv = equipe1View.get(i);
+				// Display and move player
+				for (int i = 0; i< team1.size() ; i++ ) {
+					Player p = team1.get(i);
+					PlayerView pv = team1View.get(i);
 
 
-					// Joueur IA de l'equipe 1
+					// AI player of team 1
 					if(p instanceof IAPlayer){
 						tryShoot(p,pv,-1);
 
@@ -178,7 +154,7 @@ public class GameController extends Canvas {
 						}
 					}
 
-					//Joueur Humain de l'equipe 1
+					// Human player of team 1
 					if(p instanceof HumanPlayer) {
 						if (input.contains("LEFT")) {
 							p.moveLeft();
@@ -203,34 +179,31 @@ public class GameController extends Canvas {
 						if (input.contains("SPACE")) {
 							tryShoot(p, pv,-1);
 						}
-						pv.display(gc,p.getX(),p.getY(),p.getAngle());
+						pv.display(gc,p.getX(),p.getY(),p.getDirection());
 					}
 
 				}
 
-				for (int i=0 ; i<equipe2.size() ; i++ ) {
-					Player p = equipe2.get(i);
-					PlayerView pv = equipe2View.get(i);
+				for (int i = 0; i< team2.size() ; i++ ) {
+					Player p = team2.get(i);
+					PlayerView pv = team2View.get(i);
 
-					//Joueur IA de l'equipe 2
+					// AI player of team 2
 					if(p instanceof IAPlayer){
 						tryShoot(p,pv,1);
 
 						if((int) Math.round( Math.random() ) == 1){
 							p.moveLeft();
-							if(projectile != null)
-								tryGrab(p,projectile);
-							pv.spriteAnimate(p.getX());
 						}
 						else{
 							p.moveRight();
-							if(projectile != null)
-								tryGrab(p,projectile);
-							pv.spriteAnimate(p.getX());
 						}
+						if(projectile != null)
+							tryGrab(p,projectile);
+						pv.spriteAnimate(p.getX());
 					}
 
-					//Joueur Humain de l'equipe 2
+					// Human player of team 2
 					else if(p instanceof HumanPlayer) {
 						if (input.contains("Q")) {
 							p.moveLeft();
@@ -255,36 +228,46 @@ public class GameController extends Canvas {
 						if (input.contains("ENTER")) {
 							tryShoot(p, pv,1);
 						}
-						pv.display(gc,p.getX(),p.getY(),p.getAngle());
+						pv.display(gc,p.getX(),p.getY(),p.getDirection());
 					}
 
-					//Redistribuer la balle
+					//Redistribute the projectile
 					if(input.contains("R")) {
 						giveBallToARandomPlayer();
 						input.remove("R");
 					}
+
+					//Display the score
+					if(input.contains("O")) {
+						displayScore();
+					}
 				}
 	    	}
-	     }.start(); // On lance la boucle de rafraichissement 
+	     }.start();
 	     
 	}
+
 
 	private void giveBallToARandomPlayer() {
 		ArrayList<Player> team;
 		if((int) Math.round( Math.random() ) == 1)
-			team = equipe1;
+			team = team1;
 		else
-			team = equipe2;
+			team = team2;
 		team.get((int) (Math.random() * team.size())).setBall(true);
 	}
 
-	private void tryShoot(Player p, PlayerView pv, int sens) {
+	private void tryShoot(Player p, PlayerView pv, int way) {
 		if(p.haveBall()){
 			pv.getSprite().playShoot();
-			projectile = Projectile.getProjectile(1, p.getAngle(), p.getX(), p.getY() + (PlayerView.HEIGHT + 10)* sens,sens);
+			projectile = Projectile.getProjectile(1, p.getDirection(), p.getX(), p.getY() + (PlayerView.HEIGHT + 10)* way,way);
 			projectile.setBallMoving(true);
 			p.setBall(false);
 		}
+	}
+
+	public void displayScore() {
+		gc.strokeText(scoreT1 + "/" + scoreT2, width/2, height/2);
 	}
 
 	private Player checkCollisionOfTeam(Rectangle2D projBoundary, ArrayList<Player> team) {
@@ -292,17 +275,13 @@ public class GameController extends Canvas {
 		while (iterator.hasNext()) {
 			Player player = iterator.next();
 			if(checkCollisionPlayer(projBoundary, player))
-			return player;
+				return player;
 		}
 		return null;
 	}
 
 	private boolean checkCollisionPlayer(Rectangle2D projBoundary, Player player){
 		return projBoundary.intersects(new Rectangle2D(player.getX(), player.getY(), PlayerView.WIDTH, PlayerView.HEIGHT));
-	}
-
-	public GraphicsContext getGc() {
-		return gc;
 	}
 
 	public boolean isOOB(Projectile p){
@@ -318,8 +297,7 @@ public class GameController extends Canvas {
 		}
 	}
 
-	public boolean checkLooseTeam(ArrayList<Player> team){
-		return team.size()==0;
+	public GraphicsContext getGc() {
+		return gc;
 	}
-
 }

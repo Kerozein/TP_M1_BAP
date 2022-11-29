@@ -9,21 +9,18 @@ import javafx.util.Duration;
 public class Sprite extends ImageView {
     private final Rectangle2D[] walkClips;
     private final Rectangle2D[] shootClips;
-    private int numCells;
-    private int numCellsWalk;
-    private int numCellsShoot;
+    private final int numCellsWalk;
+    private final int numCellsShoot;
     private final Timeline walkTimeline;
     private final IntegerProperty frameCounter = new SimpleIntegerProperty(0);
     private final Timeline shootTimeline;
     private Timeline timeline;
-    public boolean isRunning;
+    private boolean isRunning;
 
-    public Sprite(Image animationImage, int numCells, int numRows, Duration frameTime, String side) {
-        this.numCells = numCells;
+    public Sprite(Image animationImage, Duration frameTime, String side) {
 
-        double cellWidth  = 64;//animationImage.getWidth() / numCells; //64x64
-        double cellHeight = 64;//animationImage.getHeight() / numRows;
-
+        double cellWidth  = 64;
+        double cellHeight = 64;
 
         numCellsWalk = 9;
 
@@ -79,7 +76,6 @@ public class Sprite extends ImageView {
         timeline.stop();
         timeline.playFromStart();
     }
-
     public void playShoot(){
         frameCounter.set(0);
         timeline.stop();
@@ -89,9 +85,5 @@ public class Sprite extends ImageView {
         timeline.playFromStart();
     }
 
-    public void stop() {
-        frameCounter.set(0);
-        setViewport(walkClips[frameCounter.get()]);
-        walkTimeline.stop();
-    }
+    public boolean getRunning() {return isRunning;}
 }

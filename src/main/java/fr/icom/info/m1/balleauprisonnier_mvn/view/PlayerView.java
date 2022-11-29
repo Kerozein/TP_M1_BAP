@@ -7,68 +7,43 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 public class PlayerView {
-    public Sprite sprite;
-
-    public String playerColor;
-
-    // On une image globale du joueur
-    public Image directionArrow;
-
-    private Image img;
-    public ImageView PlayerDirectionArrow;
-
+    private final Sprite sprite;
+    private final Image directionArrow;
     public static final int WIDTH = 30;
-
     public static final int HEIGHT = 46;
 
-    public PlayerView(String color, String side, double x, double y){
-        playerColor=color;
-
-        // On charge la representation du joueur
+    public PlayerView(String side, double x, double y){
         if(side=="top"){
             directionArrow = new Image("assets/PlayerArrowDown.png");
         }
         else{
             directionArrow = new Image("assets/PlayerArrowUp.png");
         }
-
-        PlayerDirectionArrow = new ImageView();
-        PlayerDirectionArrow.setImage(directionArrow);
-        PlayerDirectionArrow.setFitWidth(10);
-        PlayerDirectionArrow.setPreserveRatio(true);
-        PlayerDirectionArrow.setSmooth(true);
-        PlayerDirectionArrow.setCache(true);
-
-        this.img = new Image("assets/orc.png");
-        sprite = new Sprite(this.img, 0,0, Duration.seconds(.2), side);
+        ImageView playerDirectionArrow = new ImageView();
+        playerDirectionArrow.setImage(directionArrow);
+        playerDirectionArrow.setFitWidth(10);
+        playerDirectionArrow.setPreserveRatio(true);
+        playerDirectionArrow.setSmooth(true);
+        playerDirectionArrow.setCache(true);
+        Image img = new Image("assets/orc.png");
+        sprite = new Sprite(img, Duration.seconds(.2), side);
         sprite.setX(x);
         sprite.setY(y);
     }
 
-    public void spriteAnimate(double x, double y){
-        //System.out.println("Animating sprite");
-        if(!sprite.isRunning) {sprite.playContinuously();}
-        sprite.setX(x);
-        sprite.setY(y);
-    }
     public void spriteAnimate(double x){
-        //System.out.println("Animating sprite");
-        if(!sprite.isRunning) {sprite.playContinuously();}
+        if(!sprite.getRunning()) {sprite.playContinuously();}
         sprite.setX(x);
     }
 
-    /**
-     *  Affichage du joueur
-     */
-    public void display(GraphicsContext graphicsContext,double x, double y, double angle)
-    {
-        graphicsContext.save(); // saves the current state on stack, including the current transform
+    public void display(GraphicsContext graphicsContext,double x, double y, double angle){
+        graphicsContext.save();
         rotate(graphicsContext, angle, x + directionArrow.getWidth() / 2, y + directionArrow.getHeight() / 2);
         graphicsContext.drawImage(directionArrow, x, y);
-        graphicsContext.restore(); // back to original state (before rotation)
+        graphicsContext.restore();
     }
 
-    private void rotate(GraphicsContext gc, double angle, double px, double py) {
+    private void rotate(GraphicsContext gc, double angle, double px, double py){
         Rotate r = new Rotate(angle, px, py);
         gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
     }
@@ -77,8 +52,8 @@ public class PlayerView {
         return sprite;
     }
 
+    // Make a player disappear from the screen
     public void disable() {
         sprite.setImage(null);
     }
-
 }
