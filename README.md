@@ -11,5 +11,7 @@ Sur IntelliJ : ouvrir le projet => edit configuration => add new => Maven. Dans 
 ## Comment jouer 
 
 Pour contrôler le joueur du haut, utiliser les touches z,q,s,d pour le déplacer et ``Entrée`` pour tirer la balle.
-Pour contrôler le jooueur du bas, utiliser les flèches directionnelles pour le déplacer et ``Espace`` pour tirer la balle
+Pour contrôler le joueur du bas, utiliser les flèches directionnelles pour le déplacer et ``Espace`` pour tirer la balle
+Pour afficher le score appuyer sur ``O``
+Pour redonner la balle a un joueur aléatoire appuyer sur ``R``
 
